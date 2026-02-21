@@ -21,16 +21,15 @@ export default function Login() {
       const result = await loginAPICall({ username: email, password });
       sessionStorage.setItem("accessToken", result.accessToken);
       setTokens(result.accessToken, result.refreshToken);
-      console.log(result);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      navigate("/home");
-      const userData = await GetLoggedUser();
 
+      // Carica i dati utente dopo il login
+      const userData = await GetLoggedUser();
       setUser(userData);
 
-      // Esempio di setUser dopo login riuscito
+      // Naviga alla home solo dopo aver caricato i dati
+      navigate("/home");
+    } catch (error) {
+      console.error("Errore durante il login:", error);
     }
   };
 

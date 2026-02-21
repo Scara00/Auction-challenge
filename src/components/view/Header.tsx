@@ -11,11 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, User, LogOut, Settings, Gavel } from "lucide-react";
+import { Search, User, LogOut, Settings } from "lucide-react";
 import { logOutAPICall } from "@/api/services/AuthServiceApi";
 
 export default function Header() {
-  const { isAuthenticated, user, logout, refreshToken } = useAuthStore();
+  const { isAuthenticated, user, refreshToken } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
@@ -93,7 +93,14 @@ export default function Header() {
                     variant="ghost"
                     className="relative h-10 w-10 rounded-full">
                     <Avatar className="h-10 w-10 cursor-pointer">
-                      <AvatarImage src={user?.profileImage} alt={user?.name} />
+                      <AvatarImage
+                        src={
+                          user?.profilePictureId
+                            ? `https://api-challenge.icib.dev/media/${user.profilePictureId}`
+                            : undefined
+                        }
+                        alt={user?.name}
+                      />
                       <AvatarFallback className="bg-white">
                         {isAuthenticated ? (
                           getInitials(user?.name)
@@ -119,20 +126,6 @@ export default function Header() {
                         <Link to="/profile" className="cursor-pointer">
                           <User className="mr-2 h-4 w-4" />
                           Il mio Profilo
-                        </Link>
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem asChild>
-                        <Link to="/profile/edit" className="cursor-pointer">
-                          <Settings className="mr-2 h-4 w-4" />
-                          Modifica Profilo
-                        </Link>
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem asChild>
-                        <Link to="/my-auctions" className="cursor-pointer">
-                          <Gavel className="mr-2 h-4 w-4" />
-                          Le mie Aste
                         </Link>
                       </DropdownMenuItem>
 

@@ -1,38 +1,68 @@
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useQueryParams } from "@/hooks/useQueryParams";
+import { getAuctions } from "@/api/services/AuctionServiceApi";
+import AuctionCard from "@/components/view/AuctionCard";
+import type { AuctionResponse } from "@/types/auction";
 
 export default function AuctionSearch() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const { getParam, setParam, getAllParams } = useQueryParams();
+  const [searchQuery, setSearchQuery] = useState(getParam("q") || "");
+  const [auctions, setAuctions] = useState<AuctionResponse[]>([]); // Stato   i risultati di ricerca
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    // Aggiorna il query parameter nell'URL
+    setParam("q", searchQuery);
     console.log("Searching for:", searchQuery);
+    console.log("All params:", getAllParams());
     // Implementare logica di ricerca
+  };
+  useEffect(() => {
+    getListAuctions();
+  }, []);
+
+  const getListAuctions = async (favoritesOnly = false) => {
+    try {
+      const params = {
+        categoryId: getParam("category") || undefined,
+        page: 1,
+        limit: 10,
+        showFavoritesOnly: favoritesOnly,
+      };
+      const result = await getAuctions(params);
+      setAuctions(result.list);
+      return result.list;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      // Esempio di setUser dopo login riuscito
+    }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Cerca Aste</h1>
+      <button
+        onClick={() => navigate("/home")}
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors">
+        <ArrowLeft className="w-5 h-5" />
+        <span>Torna alla home</span>
+      </button>
 
-      <form onSubmit={handleSearch} className="mb-8">
-        <div className="flex gap-4">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cerca per titolo, categoria..."
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-md"
-          />
-          <Button type="submit">Cerca</Button>
+      {auctions.length === 0 ? (
+        <div className="text-center py-12 text-gray-500">
+          <p>Nessuna asta disponibile al momento.</p>
         </div>
-      </form>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Placeholder per risultati ricerca */}
-        <p className="text-gray-500">
-          Nessuna asta trovata. Inizia una ricerca!
-        </p>
-      </div>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {auctions.slice(0, 10).map((auction) => (
+            <AuctionCard auction={auction} key={auction.id} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

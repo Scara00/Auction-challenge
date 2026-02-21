@@ -1,30 +1,22 @@
+import type { UserResponse } from '@/types/user';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface User {
-    id?: string;
-    name: string;
-    surname?: string;
-    email: string;
-    profileImage?: string;
-    phone?: string;
-    address?: string;
-    description?: string;
-}
+
 
 interface AuthState {
     isAuthenticated: boolean;
-    user: User | null;
+    user: UserResponse | null;
     authToken: string | null;
     refreshToken: string | null;
     // Azioni
-    login: (user: User) => void;
+    login: (user: UserResponse) => void;
     logout: () => void;
     setAuthToken: (token: string | null) => void;
     setRefreshToken: (token: string | null) => void;
     setTokens: (authToken: string | null, refreshToken: string | null) => void;
-    setUser: (user: User | null) => void;
-    updateUser: (userData: Partial<User>) => void;
+    setUser: (user: UserResponse | null) => void;
+    updateUser: (userData: Partial<UserResponse>) => void;
     setAuthenticated: (isAuthenticated: boolean) => void;
 }
 

@@ -3,6 +3,7 @@ import "./App.css";
 import ProtectedLayout from "./components/ProtectedLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import AuctionSearch from "./pages/AuctionSearch";
 import AuctionDetail from "./pages/AuctionDetail";
 import AuctionCreate from "./pages/AuctionCreate";
@@ -14,8 +15,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Route pubblica senza header */}
+        {/* Route pubbliche senza header */}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* Route protette con header */}
         <Route

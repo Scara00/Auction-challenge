@@ -5,7 +5,9 @@ interface Category {
   id: string;
   name: string;
   icon: string;
-  auctionsCount: number;
+  _count?: {
+    auctions: number;
+  };
 }
 
 interface CategoriesSectionProps {
@@ -43,13 +45,13 @@ export default function CategoriesSection({
           {categories.map((category) => (
             <Link
               key={category.id}
-              to={`/auctions?category=${encodeURIComponent(category.name)}`}>
+              to={`/search?category=${encodeURIComponent(category.id)}&categoryName=${encodeURIComponent(category.name)}`}>
               <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                 <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                   <span className="text-4xl mb-2">{category.icon}</span>
                   <h3 className="font-semibold text-sm">{category.name}</h3>
                   <p className="text-xs text-gray-500 mt-1">
-                    {category.auctionsCount} aste
+                    {category._count?.auctions} aste
                   </p>
                 </CardContent>
               </Card>

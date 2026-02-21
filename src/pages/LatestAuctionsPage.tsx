@@ -1,40 +1,45 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import AuctionCard from "@/components/view/AuctionCard";
-import { mockAuctions } from "@/data/mockData";
-
-interface Auction {
-  id: string;
-  title: string;
-  image: string;
-  currentBid: number;
-  category: string;
-  favoritesCount: number;
-}
+import type { AuctionResponse } from "@/types/auction";
+import { getAuctions } from "@/api/services/AuctionServiceApi";
 
 export default function LatestAuctionsPage() {
-  const [auctions, setAuctions] = useState<Auction[]>(mockAuctions);
+  const navigate = useNavigate();
+  const [auctions, setAuctions] = useState<AuctionResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const getListAuctions = async (favoritesOnly = false) => {
+    try {
+      const params = {
+        //ownerId: user?.id,
+        page: 1,
+        limit: 40,
+        showFavoritesOnly: favoritesOnly,
+      };
+      const result = await getAuctions(params);
+      setAuctions(result.list);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      // Esempio di setUser dopo login riuscito
+    }
+  };
   useEffect(() => {
-    // const fetchAuctions = async () => {
-    //   try {
-    //     const response = await fetch("/api/auctions/latest");
-    //     if (response.ok) {
-    //       const data = await response.json();
-    //       setAuctions(data);
-    //     }
-    //   } catch (error) {
-    //     console.error("Errore nel caricamento delle aste:", error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // };
-    // fetchAuctions();
+    getListAuctions(false);
   }, []);
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Ultime Aste</h1>
+      <button
+        onClick={() => navigate("/home")}
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors">
+        <ArrowLeft className="w-5 h-5" />
+        <span>Torna alla home</span>
+      </button>
+
+      <h2 className="text-3xl font-bold mb-8">Ultime Aste</h2>
 
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -53,15 +58,7 @@ export default function LatestAuctionsPage() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {auctions.map((auction) => (
-            <AuctionCard
-              key={auction.id}
-              id={auction.id}
-              title={auction.title}
-              image={auction.image}
-              currentBid={auction.currentBid}
-              category={auction.category}
-              favoritesCount={auction.favoritesCount}
-            />
+            <AuctionCard key={auction.id} auction={auction} />
           ))}
         </div>
       )}

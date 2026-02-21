@@ -17,7 +17,6 @@ import { AlertTriangle, Loader2 } from "lucide-react";
 interface BidFormProps {
   currentBid: number;
   startingPrice: number;
-  isAuthenticated: boolean;
   isOwner: boolean;
   isExpired: boolean;
   onPlaceBid: (amount: number) => Promise<void>;
@@ -27,7 +26,6 @@ interface BidFormProps {
 export default function BidForm({
   currentBid,
   startingPrice,
-  isAuthenticated,
   isOwner,
   isExpired,
   onPlaceBid,
@@ -37,6 +35,7 @@ export default function BidForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const isAuthenticated = !!sessionStorage.getItem("accessToken");
   const minBid = currentBid > 0 ? currentBid + 1 : startingPrice;
 
   const formatCurrency = (amount: number) => {

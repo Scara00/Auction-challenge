@@ -14,11 +14,12 @@ import AuctionCard from "@/components/view/AuctionCard";
 import {
   getAuctionById,
   setAuctionFavourite,
+  createAuctionBid,
 } from "@/api/services/AuctionServiceApi";
 
 export default function AuctionDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { isAuthenticated, user } = useAuthStore();
+  const { user } = useAuthStore();
 
   const [auction, setAuction] = useState<AuctionResponse | null>(null);
   const [suggestedAuctions, setSuggestedAuctions] = useState<AuctionResponse[]>(
@@ -29,28 +30,27 @@ export default function AuctionDetailPage() {
   const [isExpired, setIsExpired] = useState(false);
 
   // Carica i dati dell'asta
+  const loadAuctionData = async (showLoading = true) => {
+    if (!id) return;
+
+    try {
+      if (showLoading) setIsLoading(true);
+      const data = await getAuctionById(id);
+      setAuction(data);
+
+      // Verifica se scaduta
+      const expired =
+        new Date(data.endDate) < new Date() || data.status === "INACTIVE";
+      setIsExpired(expired);
+    } catch (error) {
+      console.error("Errore nel caricamento dell'asta:", error);
+    } finally {
+      if (showLoading) setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadAuctionData = async () => {
-      if (!id) return;
-
-      try {
-        setIsLoading(true);
-        // TODO: Chiamare API getAuctionById
-        const data = await getAuctionById(id);
-        setAuction(data);
-
-        // Verifica se scaduta
-        // setIsExpired(
-        //   new Date(data.endDate) < new Date() || data.status === "INACTIVE",
-        // );
-      } catch (error) {
-        console.error("Errore nel caricamento dell'asta:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadAuctionData();
+    loadAuctionData(true);
   }, [id]);
 
   const handleToggleFavorite = async () => {
@@ -62,16 +62,10 @@ export default function AuctionDetailPage() {
   const handlePlaceBid = async (amount: number) => {
     if (!id) return;
 
-    // TODO: Chiamare API placeBid
-    // const result = await placeBid(id, amount);
+    await createAuctionBid(id, { amount });
 
-    // Aggiorna l'asta con la nuova offerta
-    // if (auction) {
-    //   setAuction({
-    //     ...auction,
-    //     bids: [result, ...auction.bids],
-    //   });
-    // }
+    // Ricarica i dati dell'asta senza mostrare lo skeleton
+    await loadAuctionData(false);
   };
 
   const handleWithdraw = async () => {
@@ -164,7 +158,6 @@ export default function AuctionDetailPage() {
             <BidForm
               currentBid={getCurrentBid()}
               startingPrice={auction.startingPrice}
-              isAuthenticated={isAuthenticated}
               isOwner={isOwner}
               isExpired={isExpired}
               onPlaceBid={handlePlaceBid}

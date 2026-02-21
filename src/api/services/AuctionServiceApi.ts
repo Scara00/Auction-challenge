@@ -40,3 +40,11 @@ export const createAuction = async (params: any) => {
     });
     return data;
 };
+export const createAuctionBid = async (id: string, params: any) => {
+    const { data } = await apiClient.post(`/auction/${id}/bid`, params, {
+        headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+        },
+    });
+    return data;
+};

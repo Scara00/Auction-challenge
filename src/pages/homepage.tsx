@@ -3,7 +3,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import LatestAuctionsSection from "@/components/view/LatestAuctionsSection";
 import CategoriesSection from "@/components/view/CategoriesSection";
 import FavoritesSection from "@/components/view/FavoritesSection";
-import { type Auction, type Category } from "@/data/mockData";
+import { type Category } from "@/data/mockData";
 import {
   getAuctions,
   getAuctionsCategory,
@@ -14,7 +14,7 @@ export default function HomePage() {
   const { isAuthenticated, user } = useAuthStore();
   const [latestAuctions, setLatestAuctions] = useState<AuctionResponse[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [favorites, setFavorites] = useState<Auction[]>([]);
+  const [favorites, setFavorites] = useState<AuctionResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function HomePage() {
   const getListAuctions = async (favoritesOnly = false) => {
     try {
       const params = {
-        ownerId: user?.id,
+        //ownerId: user?.id,
         page: 1,
         limit: 10,
         showFavoritesOnly: favoritesOnly,
