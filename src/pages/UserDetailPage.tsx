@@ -9,6 +9,7 @@ import ProfileCard from "@/components/user/ProfileCard";
 import ProfileHeader from "@/components/user/ProfileHeader";
 import PersonalInfoForm from "@/components/user/PersonalInfoForm";
 import UserAuctionsSection from "@/components/user/UserAuctionsSection";
+import ChangePasswordForm from "@/components/user/ChangePasswordForm";
 
 export default function UserDetailPage() {
   const { logout } = useAuthStore();
@@ -162,6 +163,8 @@ export default function UserDetailPage() {
             isEditing={isEditing}
             onInputChange={handleInputChange}
           />
+
+          <ChangePasswordForm />
 
           <UserAuctionsSection auctions={userData?.ownedAuctions || []} />
         </div>

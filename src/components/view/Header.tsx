@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, User, LogOut, Settings } from "lucide-react";
+import { Search, User, LogOut, Settings, Heart } from "lucide-react";
 import { logOutAPICall } from "@/api/services/AuthServiceApi";
 
 export default function Header() {
@@ -53,7 +53,7 @@ export default function Header() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="bg-slate-500 shadow sticky top-0 z-50">
+      <header className="bg-black shadow sticky top-0 z-50">
         <nav className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
@@ -82,9 +82,19 @@ export default function Header() {
             {/* Menu Profilo */}
             <div className="flex items-center gap-4">
               {isAuthenticated && (
-                <Link to="/auctions/create">
-                  <Button variant="secondary">Crea Asta</Button>
-                </Link>
+                <>
+                  <Link to="/search?favorites=true">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-white hover:text-red-400">
+                      <Heart className="h-5 w-5" />
+                    </Button>
+                  </Link>
+                  <Link to="/auctions/create">
+                    <Button variant="secondary">Crea Asta</Button>
+                  </Link>
+                </>
               )}
 
               <DropdownMenu>
@@ -92,7 +102,7 @@ export default function Header() {
                   <Button
                     variant="ghost"
                     className="relative h-10 w-10 rounded-full">
-                    <Avatar className="h-10 w-10 cursor-pointer">
+                    <Avatar className="h-10 w-10 cursor-pointer border-2 border-white">
                       <AvatarImage
                         src={
                           user?.profilePictureId

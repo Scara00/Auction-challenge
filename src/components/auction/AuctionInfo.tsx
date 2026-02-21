@@ -5,7 +5,7 @@ import { Heart, Calendar } from "lucide-react";
 interface AuctionInfoProps {
   title: string;
   description: string;
-  categoryId: string;
+  categoryName: string;
   createdAt: string;
   favoritesCount: number;
   isFavorite: boolean;
@@ -15,7 +15,7 @@ interface AuctionInfoProps {
 export default function AuctionInfo({
   title,
   description,
-  categoryId,
+  categoryName,
   createdAt,
   favoritesCount,
   isFavorite,
@@ -35,7 +35,7 @@ export default function AuctionInfo({
     <div className="space-y-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <Badge className="mb-2">{categoryId}</Badge>
+          <Badge className="mb-2">{categoryName}</Badge>
           <h1 className="text-3xl font-bold">{title}</h1>
         </div>
         <Button

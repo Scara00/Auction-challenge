@@ -13,7 +13,6 @@ interface ProfileCardProps {
 
 export default function ProfileCard({
   userData,
-  previewImage,
   isSaving,
   onImageChange,
   onLogout,

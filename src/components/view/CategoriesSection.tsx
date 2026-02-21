@@ -46,8 +46,8 @@ export default function CategoriesSection({
             <Link
               key={category.id}
               to={`/search?category=${encodeURIComponent(category.id)}&categoryName=${encodeURIComponent(category.name)}`}>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full py-2">
+                <CardContent className="p-2 flex flex-col items-center justify-center text-center">
                   <span className="text-4xl mb-2">{category.icon}</span>
                   <h3 className="font-semibold text-sm">{category.name}</h3>
                   <p className="text-xs text-gray-500 mt-1">

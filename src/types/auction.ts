@@ -50,6 +50,10 @@ export interface AuctionResponse {
   status: "ACTIVE" | "INACTIVE";
   ownerId: string;
   categoryId: string;
+  category?: {
+    id: string;
+    name: string;
+  };
   createdAt: string;
   updatedAt: string;
   bids: BidInAuctionResponse[];

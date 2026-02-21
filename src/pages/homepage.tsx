@@ -43,7 +43,6 @@ export default function HomePage() {
   const getListAuctions = async (favoritesOnly = false) => {
     try {
       const params = {
-        //ownerId: user?.id,
         page: 1,
         limit: 10,
         showFavoritesOnly: favoritesOnly,
@@ -52,8 +51,6 @@ export default function HomePage() {
       return result.list;
     } catch (error) {
       console.log(error);
-    } finally {
-      // Esempio di setUser dopo login riuscito
     }
   };
 

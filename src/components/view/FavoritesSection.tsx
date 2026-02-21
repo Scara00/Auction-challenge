@@ -62,7 +62,7 @@ export default function FavoritesSection({
           <h2 className="text-2xl font-bold flex items-center gap-2">
             <Heart className="h-6 w-6 text-red-500" />I tuoi Preferiti
           </h2>
-          <Link to="/favorites">
+          <Link to="/search?favorites=true">
             <Button variant="outline" className="gap-2">
               Visualizza tutti i preferiti
               <ArrowRight className="h-4 w-4" />

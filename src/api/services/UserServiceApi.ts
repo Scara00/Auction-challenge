@@ -43,3 +43,17 @@ export const registerUserAPICall = async (
     const { data } = await apiClient.post("/user", params)
     return data
 };
+
+export const changePassword = async (
+    params: {
+        currentPassword: string;
+        newPassword: string;
+    }
+) => {
+    const { data } = await apiClient.put("/user/password", params, {
+        headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
+        }
+    });
+    return data;
+};

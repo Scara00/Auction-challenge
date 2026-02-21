@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import type { AuctionResponse } from "@/types/auction";
 
 // Componenti
@@ -15,19 +16,36 @@ import {
   getAuctionById,
   setAuctionFavourite,
   createAuctionBid,
+  getAuctionsCategory,
 } from "@/api/services/AuctionServiceApi";
+
+interface Category {
+  id: string;
+  name: string;
+}
 
 export default function AuctionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuthStore();
 
   const [auction, setAuction] = useState<AuctionResponse | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [suggestedAuctions, setSuggestedAuctions] = useState<AuctionResponse[]>(
     [],
   );
   const [isLoading, setIsLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
+
+  // Carica le categorie
+  const loadCategories = async () => {
+    try {
+      const data = await getAuctionsCategory();
+      setCategories(data);
+    } catch (error) {
+      console.error("Errore nel caricamento delle categorie:", error);
+    }
+  };
 
   // Carica i dati dell'asta
   const loadAuctionData = async (showLoading = true) => {
@@ -49,7 +67,19 @@ export default function AuctionDetailPage() {
     }
   };
 
+  // Funzione per ottenere il nome della categoria
+  const getCategoryName = (categoryId: string) => {
+    // Prima controlla se l'asta ha già l'oggetto category
+    if (auction?.category?.name) {
+      return auction.category.name;
+    }
+    // Altrimenti cerca nella lista delle categorie
+    const category = categories.find((cat) => cat.id === categoryId);
+    return category?.name || "Senza categoria";
+  };
+
   useEffect(() => {
+    loadCategories();
     loadAuctionData(true);
   }, [id]);
 
@@ -127,6 +157,14 @@ export default function AuctionDetailPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Torna alla home */}
+      <button
+        onClick={() => window.history.back()}
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors">
+        <ArrowLeft className="w-5 h-5" />
+        <span>Indietro</span>
+      </button>
+
       {/* Sezione 1: Dettagli Asta */}
       <section className="mb-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -138,7 +176,7 @@ export default function AuctionDetailPage() {
             <AuctionInfo
               title={auction.title}
               description={auction.description}
-              categoryId={auction.categoryId}
+              categoryName={getCategoryName(auction.categoryId)}
               createdAt={auction.createdAt}
               favoritesCount={auction._count.auctionFavorites}
               isFavorite={isFavorite}

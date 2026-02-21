@@ -8,6 +8,13 @@ export const loginAPICall = async (
     return data
 };
 
+export const changePasswordAPICall = async (
+    params: any
+) => {
+    const { data } = await apiClient.post("/auth/password", params)
+    return data
+};
+
 export const logOutAPICall = async (
     params: any
 ) => {

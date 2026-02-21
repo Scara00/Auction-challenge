@@ -62,8 +62,7 @@ export default function AuctionCard({ auction }: AuctionCardProps) {
   return (
     <Link to={`/auctions/${id}`}>
       <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group h-full flex flex-col">
-        {/* Container immagine con altezza fissa */}
-        <div className="relative w-full h-48 flex-shrink-0 overflow-hidden">
+        <div className="relative w-full h-48 shrink-0 overflow-hidden">
           {imageError || !imageUrl ? (
             <div className="w-full h-full bg-gray-100 flex items-center justify-center">
               <ImageOff className="h-8 w-8 text-gray-400" />
@@ -77,7 +76,6 @@ export default function AuctionCard({ auction }: AuctionCardProps) {
             />
           )}
 
-          {/* Badge stato */}
           <div className="absolute top-2 left-2">
             {status === "INACTIVE" || isExpired ? (
               <Badge variant="secondary">Terminata</Badge>
