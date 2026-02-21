@@ -37,6 +37,7 @@ export const registerUserAPICall = async (
         name: string;
         surname: string;
         phone: string;
+        profilePictureId?: string;
     }
 ) => {
     const { data } = await apiClient.post("/user", params)

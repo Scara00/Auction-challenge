@@ -4,6 +4,7 @@ import { RegisterForm } from "@/components/view/registerForm";
 
 import { Gavel } from "lucide-react";
 import { registerUserAPICall } from "@/api/services/UserServiceApi";
+import { uploadMediaPublic } from "@/api/services/MediaServiceApi";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -16,17 +17,35 @@ export default function Register() {
     name,
     surname,
     phone,
+    profileImage,
   }: {
     email: string;
     password: string;
     name: string;
     surname: string;
     phone: string;
+    profileImage?: File;
   }) => {
     try {
       setError(null);
       setIsLoading(true);
-      await registerUserAPICall({ email, password, name, surname, phone });
+
+      let profilePictureId: string | undefined;
+
+      // Se c'è un'immagine, la carica prima
+      if (profileImage) {
+        const uploadResult = await uploadMediaPublic(profileImage);
+        profilePictureId = uploadResult.id;
+      }
+
+      await registerUserAPICall({
+        email,
+        password,
+        name,
+        surname,
+        phone,
+        profilePictureId,
+      });
       // Dopo la registrazione, reindirizza al login
       navigate("/login");
     } catch (error: any) {

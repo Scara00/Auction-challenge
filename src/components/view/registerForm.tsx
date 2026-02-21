@@ -7,9 +7,10 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Loader2 } from "lucide-react";
+import { Loader2, Camera, User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface RegisterFormProps {
   onClickRegister: (data: {
@@ -18,6 +19,7 @@ interface RegisterFormProps {
     name: string;
     surname: string;
     phone: string;
+    profileImage?: File;
   }) => Promise<void>;
   isLoading?: boolean;
 }
@@ -32,6 +34,21 @@ export const RegisterForm: React.FC<
   const [surname, setSurname] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfileImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +64,14 @@ export const RegisterForm: React.FC<
       return;
     }
 
-    await onClickRegister({ email, password, name, surname, phone });
+    await onClickRegister({
+      email,
+      password,
+      name,
+      surname,
+      phone,
+      profileImage: profileImage || undefined,
+    });
   };
 
   return (
@@ -68,6 +92,36 @@ export const RegisterForm: React.FC<
             {error}
           </div>
         )}
+
+        {/* Profile Image Upload */}
+        <div className="flex justify-center">
+          <div className="relative">
+            <Avatar
+              className="h-24 w-24 cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}>
+              <AvatarImage src={imagePreview || undefined} alt="Profile" />
+              <AvatarFallback className="bg-gray-100">
+                <User className="h-10 w-10 text-gray-400" />
+              </AvatarFallback>
+            </Avatar>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute bottom-0 right-0 p-1.5 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors">
+              <Camera className="h-4 w-4" />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+            />
+          </div>
+        </div>
+        <p className="text-center text-sm text-muted-foreground">
+          Clicca per aggiungere una foto profilo
+        </p>
 
         <div className="grid grid-cols-2 gap-4">
           <Field>

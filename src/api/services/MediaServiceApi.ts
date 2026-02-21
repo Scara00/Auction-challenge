@@ -24,3 +24,17 @@ export const getMedia = async (fileId: string): Promise<{ id: string }> => {
 
     return data;
 };
+
+// Upload media senza autenticazione (per registrazione)
+export const uploadMediaPublic = async (file: File): Promise<{ id: string }> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const { data } = await apiClient.post("/media/upload", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+
+    return data;
+};
