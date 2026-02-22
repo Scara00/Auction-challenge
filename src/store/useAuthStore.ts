@@ -45,7 +45,10 @@ export const useAuthStore = create<AuthState>()(
             },
 
             // Setta solo il token di autenticazione
-            setAuthToken: (token) => set({ authToken: token }),
+            setAuthToken: (token) => set({
+                authToken: token,
+                isAuthenticated: !!token
+            }),
 
             // Setta solo il refresh token
             setRefreshToken: (token) => set({ refreshToken: token }),
@@ -53,7 +56,8 @@ export const useAuthStore = create<AuthState>()(
             // Setta entrambi i token insieme
             setTokens: (authToken, refreshToken) => set({
                 authToken,
-                refreshToken
+                refreshToken,
+                isAuthenticated: !!authToken
             }),
 
             // Setta/sostituisce l'utente

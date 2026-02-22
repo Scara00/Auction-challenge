@@ -35,16 +35,16 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
-      const result = await logOutAPICall({ refreshToken });
-
-      console.log(result);
+      await logOutAPICall({ refreshToken });
     } catch (error) {
       console.log(error);
     } finally {
+      // Pulisce lo store e localStorage
+      useAuthStore.getState().logout();
+      localStorage.removeItem("auth-storage");
       sessionStorage.removeItem("accessToken");
 
       navigate("/login");
-      // Esempio di setUser dopo login riuscito
     }
   };
 
@@ -121,14 +121,12 @@ export default function Header() {
                     variant="ghost"
                     className="relative h-10 w-10 rounded-full">
                     <Avatar className="h-10 w-10 cursor-pointer border-2 border-white">
-                      <AvatarImage
-                        src={
-                          user?.profilePictureId
-                            ? `https://api-challenge.icib.dev/media/${user.profilePictureId}`
-                            : undefined
-                        }
-                        alt={user?.name}
-                      />
+                      {isAuthenticated && user?.profilePictureId ? (
+                        <AvatarImage
+                          src={`https://api-challenge.icib.dev/media/${user.profilePictureId}`}
+                          alt={user?.name}
+                        />
+                      ) : null}
                       <AvatarFallback className="bg-white">
                         {isAuthenticated ? (
                           getInitials(user?.name)

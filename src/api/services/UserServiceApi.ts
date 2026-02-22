@@ -3,13 +3,8 @@ import apiClient from "..";
 export const GetLoggedUser = async (
     params?: any
 ) => {
-    const { data } = await apiClient.get("/user/me", {
-        params,
-        headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
-        }
-    })
-    return data
+    const { data } = await apiClient.get("/user/me", { params });
+    return data;
 };
 
 export const updateUser = async (
@@ -21,11 +16,7 @@ export const updateUser = async (
         profilePictureId?: string;
     }
 ) => {
-    const { data } = await apiClient.put("/user", userData, {
-        headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
-        }
-    });
+    const { data } = await apiClient.put("/user", userData);
     return data;
 };
 
@@ -50,19 +41,11 @@ export const changePassword = async (
         newPassword: string;
     }
 ) => {
-    const { data } = await apiClient.put("/user/password", params, {
-        headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
-        }
-    });
+    const { data } = await apiClient.put("/user/password", params);
     return data;
 };
 
 export const getUserById = async (userId: string) => {
-    const { data } = await apiClient.get(`/user/details/${userId}`, {
-        headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
-        }
-    });
+    const { data } = await apiClient.get(`/user/details/${userId}`);
     return data;
 };

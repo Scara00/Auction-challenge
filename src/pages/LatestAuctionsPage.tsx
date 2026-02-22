@@ -12,12 +12,16 @@ export default function LatestAuctionsPage() {
 
   const getListAuctions = async (favoritesOnly = false) => {
     try {
-      const params = {
-        //ownerId: user?.id,
+      const params: any = {
         page: 1,
         limit: 40,
-        showFavoritesOnly: favoritesOnly,
       };
+
+      // Passa showFavoritesOnly solo se richiesto
+      if (favoritesOnly) {
+        params.showFavoritesOnly = true;
+      }
+
       const result = await getAuctions(params);
       setAuctions(result.list);
     } catch (error) {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,7 +36,7 @@ export default function BidForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isAuthenticated = !!sessionStorage.getItem("accessToken");
+  const { isAuthenticated } = useAuthStore();
   const minBid = currentBid > 0 ? currentBid + 1 : startingPrice;
 
   const formatCurrency = (amount: number) => {

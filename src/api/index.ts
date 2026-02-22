@@ -1,8 +1,77 @@
-import axios, { type AxiosInstance, AxiosError, type InternalAxiosRequestConfig, type AxiosRequestConfig, type AxiosResponse } from 'axios';
-
+import axios, { type AxiosInstance, AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import { toast } from 'sonner';
 
 // Configurazione base URL
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api-challenge.icib.dev/';
+
+// Flag per evitare loop di refresh
+let isRefreshing = false;
+let failedQueue: Array<{
+    resolve: (value?: unknown) => void;
+    reject: (reason?: unknown) => void;
+}> = [];
+
+const processQueue = (error: AxiosError | null, token: string | null = null) => {
+    failedQueue.forEach((prom) => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(token);
+        }
+    });
+    failedQueue = [];
+};
+
+// Helper per leggere lo stato auth da localStorage
+const getAuthState = () => {
+    const authStorage = localStorage.getItem('auth-storage');
+    if (!authStorage) return { isAuthenticated: false, authToken: null, refreshToken: null };
+
+    try {
+        const parsed = JSON.parse(authStorage);
+        return {
+            isAuthenticated: parsed?.state?.isAuthenticated === true,
+            authToken: parsed?.state?.authToken,
+            refreshToken: parsed?.state?.refreshToken,
+        };
+    } catch (e) {
+        console.error('Errore parsing auth storage:', e);
+        return { isAuthenticated: false, authToken: null, refreshToken: null };
+    }
+};
+
+// Helper per aggiornare i token nello storage
+const updateAuthTokens = (authToken: string, refreshToken: string) => {
+    const authStorage = localStorage.getItem('auth-storage');
+    if (authStorage) {
+        try {
+            const parsed = JSON.parse(authStorage);
+            parsed.state.authToken = authToken;
+            parsed.state.refreshToken = refreshToken;
+            localStorage.setItem('auth-storage', JSON.stringify(parsed));
+        } catch (e) {
+            console.error('Errore aggiornamento auth storage:', e);
+        }
+    }
+};
+
+// Helper per fare logout
+const clearAuthStorage = () => {
+    const authStorage = localStorage.getItem('auth-storage');
+    if (authStorage) {
+        try {
+            const parsed = JSON.parse(authStorage);
+            parsed.state.isAuthenticated = false;
+            parsed.state.authToken = null;
+            parsed.state.refreshToken = null;
+            parsed.state.user = null;
+            localStorage.setItem('auth-storage', JSON.stringify(parsed));
+        } catch (e) {
+            console.error('Errore clear auth storage:', e);
+        }
+    }
+    sessionStorage.removeItem('accessToken');
+};
 
 // Creazione istanza axios
 const apiClient: AxiosInstance = axios.create({
@@ -12,13 +81,16 @@ const apiClient: AxiosInstance = axios.create({
     },
 });
 
-// Request interceptor - aggiungi token se presente
+// Request interceptor - aggiungi token solo se utente autenticato
 apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-        const token = localStorage.getItem('authToken');
-        if (token && config.headers) {
-            config.headers.Authorization = `Bearer ${token}`;
+        const { isAuthenticated, authToken } = getAuthState();
+
+        // Aggiungi header Authorization solo se autenticato e token è una stringa valida
+        if (isAuthenticated && authToken && typeof authToken === 'string' && authToken !== 'null' && authToken.trim() !== '' && config.headers) {
+            config.headers.Authorization = `Bearer ${authToken}`;
         }
+
         return config;
     },
     (error: AxiosError) => {
@@ -26,42 +98,105 @@ apiClient.interceptors.request.use(
     }
 );
 
-// Response interceptor - gestione errori
+// Response interceptor - gestione errori e refresh token
 apiClient.interceptors.response.use(
     (response) => {
         return response;
     },
-    (error: AxiosError) => {
-        // Gestione errore di autenticazione
-        if (error.response?.status === 401) {
-            // Rimuovi token non valido
-            localStorage.removeItem('authToken');
+    async (error: AxiosError) => {
+        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-            // Redirect alla pagina di login o mostra messaggio
-            console.error('Autenticazione fallita. Effettua nuovamente il login.');
+        // Gestione errore 401 - Token scaduto
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            const { refreshToken, isAuthenticated } = getAuthState();
 
-            // Opzionale: redirect automatico
-            window.location.href = '/login';
+            // Se non è autenticato o non ha refresh token, non tentare il refresh
+            if (!isAuthenticated || !refreshToken) {
+                toast.error('Sessione scaduta', {
+                    description: 'Effettua nuovamente il login.',
+                });
+                return Promise.reject(error);
+            }
+
+            // Se è già in corso un refresh, metti in coda la richiesta
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject });
+                }).then((token) => {
+                    if (originalRequest.headers) {
+                        originalRequest.headers.Authorization = `Bearer ${token}`;
+                    }
+                    return apiClient(originalRequest);
+                }).catch((err) => {
+                    return Promise.reject(err);
+                });
+            }
+
+            originalRequest._retry = true;
+            isRefreshing = true;
+
+            try {
+                // Chiama l'API di refresh
+                const response = await axios.post(`${BASE_URL}auth/refresh`, {
+                    refreshToken,
+                });
+
+                const { accessToken: newAuthToken, refreshToken: newRefreshToken } = response.data;
+
+                // Aggiorna i token nello storage
+                updateAuthTokens(newAuthToken, newRefreshToken);
+                sessionStorage.setItem('accessToken', newAuthToken);
+
+                // Aggiorna l'header della richiesta originale
+                if (originalRequest.headers) {
+                    originalRequest.headers.Authorization = `Bearer ${newAuthToken}`;
+                }
+
+                // Processa le richieste in coda
+                processQueue(null, newAuthToken);
+
+                // Riprova la richiesta originale
+                return apiClient(originalRequest);
+            } catch (refreshError) {
+                // Refresh fallito - logout
+                processQueue(refreshError as AxiosError, null);
+                clearAuthStorage();
+
+                toast.error('Sessione scaduta', {
+                    description: 'Effettua nuovamente il login.',
+                });
+
+                // Redirect al login
+                window.location.href = '/login';
+                return Promise.reject(refreshError);
+            } finally {
+                isRefreshing = false;
+            }
         }
 
-        // Gestione altri errori comuni
+        // Gestione altri errori con toast
+        const errorMessage = getErrorMessage(error);
+
         if (error.response?.status === 403) {
-            console.error('Accesso negato. Non hai i permessi necessari.');
-            localStorage.removeItem('authToken');
-
-            // Redirect alla pagina di login o mostra messaggio
-            console.error('Autenticazione fallita. Effettua nuovamente il login.');
-
-            // Opzionale: redirect automatico
-            window.location.href = '/login';
-        }
-
-        if (error.response?.status === 404) {
-            console.error('Risorsa non trovata.');
-        }
-
-        if (error.response?.status === 500) {
-            console.error('Errore del server. Riprova più tardi.');
+            toast.error('Accesso negato', {
+                description: 'Non hai i permessi necessari per questa azione.',
+            });
+        } else if (error.response?.status === 404) {
+            toast.error('Non trovato', {
+                description: 'La risorsa richiesta non esiste.',
+            });
+        } else if (error.response?.status === 500) {
+            toast.error('Errore del server', {
+                description: 'Si è verificato un errore. Riprova più tardi.',
+            });
+        } else if (error.response?.status && error.response.status >= 400) {
+            toast.error('Errore', {
+                description: errorMessage,
+            });
+        } else if (!error.response) {
+            toast.error('Errore di connessione', {
+                description: 'Verifica la tua connessione internet.',
+            });
         }
 
         // Log errore per debugging
@@ -77,5 +212,19 @@ apiClient.interceptors.response.use(
     }
 );
 
+// Helper per estrarre il messaggio di errore dalla risposta
+const getErrorMessage = (error: AxiosError): string => {
+    const data = error.response?.data as any;
+
+    if (data?.message) {
+        return Array.isArray(data.message) ? data.message[0] : data.message;
+    }
+
+    if (data?.error) {
+        return data.error;
+    }
+
+    return error.message || 'Si è verificato un errore imprevisto.';
+};
 
 export default apiClient;

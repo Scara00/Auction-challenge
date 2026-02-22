@@ -53,11 +53,16 @@ export default function HomePage() {
 
   const getListAuctions = async (favoritesOnly = false) => {
     try {
-      const params = {
+      const params: any = {
         page: 1,
         limit: 10,
-        showFavoritesOnly: favoritesOnly,
       };
+
+      // Passa showFavoritesOnly solo se richiesto (utente loggato)
+      if (favoritesOnly) {
+        params.showFavoritesOnly = true;
+      }
+
       const result = await getAuctions(params);
       return result.list;
     } catch (error) {

@@ -8,6 +8,11 @@ export const loginAPICall = async (
     return data
 };
 
+export const refreshTokenAPICall = async (refreshToken: string) => {
+    const { data } = await apiClient.post("/auth/refresh", { refreshToken });
+    return data;
+};
+
 export const changePasswordAPICall = async (
     params: any
 ) => {

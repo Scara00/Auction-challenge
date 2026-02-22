@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Calendar } from "lucide-react";
@@ -21,6 +23,9 @@ export default function AuctionInfo({
   isFavorite,
   onToggleFavorite,
 }: AuctionInfoProps) {
+  const { isAuthenticated } = useAuthStore();
+  const navigate = useNavigate();
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("it-IT", {
       day: "2-digit",
@@ -29,6 +34,14 @@ export default function AuctionInfo({
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const handleFavoriteClick = () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    onToggleFavorite();
   };
 
   return (
@@ -41,7 +54,7 @@ export default function AuctionInfo({
         <Button
           variant="outline"
           size="icon"
-          onClick={onToggleFavorite}
+          onClick={handleFavoriteClick}
           className={isFavorite ? "text-red-500" : ""}>
           <Heart className={`h-5 w-5 ${isFavorite ? "fill-current" : ""}`} />
         </Button>
