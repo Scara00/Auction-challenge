@@ -49,6 +49,12 @@ export interface AuctionResponse {
   endDate: string;
   status: "ACTIVE" | "INACTIVE";
   ownerId: string;
+  owner?: {
+    id: string;
+    name: string;
+    surname?: string;
+    profilePictureId?: string;
+  };
   categoryId: string;
   category?: {
     id: string;

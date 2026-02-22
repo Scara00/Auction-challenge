@@ -8,6 +8,7 @@ import AuctionSearch from "./pages/AuctionSearch";
 import AuctionDetail from "./pages/AuctionDetail";
 import AuctionCreate from "./pages/AuctionCreate";
 import UserDetailPage from "./pages/UserDetailPage";
+import UserProfilePage from "./pages/UserProfilePage";
 import LatestAuctionsPage from "./pages/LatestAuctionsPage";
 import Homepage from "./pages/homepage";
 
@@ -32,6 +33,7 @@ function App() {
           <Route path="auctions/:id" element={<AuctionDetail />} />
           <Route path="auctions/create" element={<AuctionCreate />} />
           <Route path="profile" element={<UserDetailPage />} />
+          <Route path="user/:userId" element={<UserProfilePage />} />
           <Route path="auctions/latest" element={<LatestAuctionsPage />} />
         </Route>
 

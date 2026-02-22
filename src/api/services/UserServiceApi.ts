@@ -57,3 +57,12 @@ export const changePassword = async (
     });
     return data;
 };
+
+export const getUserById = async (userId: string) => {
+    const { data } = await apiClient.get(`/user/details/${userId}`, {
+        headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
+        }
+    });
+    return data;
+};

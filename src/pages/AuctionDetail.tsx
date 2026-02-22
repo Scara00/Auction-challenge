@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -9,6 +9,7 @@ import type { AuctionResponse } from "@/types/auction";
 import ImageGallery from "@/components/auction/ImageGallery";
 import AuctionInfo from "@/components/auction/AuctionInfo";
 import AuctionTimer from "@/components/auction/AuctionTimer";
+import AuctionOwner from "@/components/auction/AuctionOwner";
 import BidForm from "@/components/auction/BidForm";
 import BidHistory from "@/components/auction/BidHistory";
 import AuctionCard from "@/components/view/AuctionCard";
@@ -17,6 +18,7 @@ import {
   setAuctionFavourite,
   createAuctionBid,
   getAuctionsCategory,
+  deleteAuction,
 } from "@/api/services/AuctionServiceApi";
 
 interface Category {
@@ -27,6 +29,7 @@ interface Category {
 export default function AuctionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuthStore();
+  const navigate = useNavigate();
 
   const [auction, setAuction] = useState<AuctionResponse | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -101,16 +104,8 @@ export default function AuctionDetailPage() {
   const handleWithdraw = async () => {
     if (!id) return;
 
-    // TODO: Chiamare API withdrawAuction
-    // await withdrawAuction(id);
-
-    // Aggiorna lo stato dell'asta
-    if (auction) {
-      setAuction({
-        ...auction,
-        status: "INACTIVE",
-      });
-    }
+    await deleteAuction(id);
+    navigate("/home");
   };
 
   const handleExpire = () => {
@@ -157,7 +152,7 @@ export default function AuctionDetailPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Torna alla home */}
+      {/* Torna indietro */}
       <button
         onClick={() => window.history.back()}
         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors">
@@ -165,58 +160,56 @@ export default function AuctionDetailPage() {
         <span>Indietro</span>
       </button>
 
-      {/* Sezione 1: Dettagli Asta */}
-      <section className="mb-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Galleria Immagini */}
+      {/* Layout principale */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Colonna sinistra - Immagini (2/3) */}
+        <div className="lg:col-span-2">
           <ImageGallery images={auction.auctionImages} title={auction.title} />
-
-          {/* Info Asta */}
-          <div className="space-y-6">
-            <AuctionInfo
-              title={auction.title}
-              description={auction.description}
-              categoryName={getCategoryName(auction.categoryId)}
-              createdAt={auction.createdAt}
-              favoritesCount={auction._count.auctionFavorites}
-              isFavorite={isFavorite}
-              onToggleFavorite={handleToggleFavorite}
-            />
-
-            <AuctionTimer endDate={auction.endDate} onExpire={handleExpire} />
-          </div>
         </div>
-      </section>
 
-      {/* Sezione 2: Offerte */}
-      <section className="mb-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Colonna destra - Info e Azioni (1/3) */}
+        <div className="lg:col-span-1 space-y-4">
+          {/* Info principali */}
+          <AuctionInfo
+            title={auction.title}
+            description={auction.description}
+            categoryName={getCategoryName(auction.categoryId)}
+            createdAt={auction.createdAt}
+            favoritesCount={auction._count.auctionFavorites}
+            isFavorite={isFavorite}
+            onToggleFavorite={handleToggleFavorite}
+          />
+
+          {/* Timer */}
+          <AuctionTimer endDate={auction.endDate} onExpire={handleExpire} />
+
           {/* Form Offerta */}
-          <div className="lg:col-span-1">
-            <BidForm
-              currentBid={getCurrentBid()}
-              startingPrice={auction.startingPrice}
-              isOwner={isOwner}
-              isExpired={isExpired}
-              onPlaceBid={handlePlaceBid}
-              onWithdraw={handleWithdraw}
-            />
-          </div>
+          <BidForm
+            currentBid={getCurrentBid()}
+            startingPrice={auction.startingPrice}
+            isOwner={isOwner}
+            isExpired={isExpired}
+            onPlaceBid={handlePlaceBid}
+            onWithdraw={handleWithdraw}
+          />
 
-          {/* Storico Offerte */}
-          <div className="lg:col-span-2">
-            <BidHistory
-              bids={auction.bids}
-              winningBid={auction.winningBid}
-              isExpired={isExpired}
-            />
-          </div>
+          {/* Venditore */}
+          <AuctionOwner ownerId={auction.ownerId} />
         </div>
+      </div>
+
+      {/* Storico Offerte */}
+      <section className="mt-12">
+        <BidHistory
+          bids={auction.bids}
+          winningBid={auction.winningBid}
+          isExpired={isExpired}
+        />
       </section>
 
-      {/* Sezione 3: Aste Suggerite */}
+      {/* Aste Suggerite */}
       {suggestedAuctions.length > 0 && (
-        <section>
+        <section className="mt-12">
           <h2 className="text-2xl font-bold mb-6">Aste simili</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {suggestedAuctions.map((suggestedAuction) => (

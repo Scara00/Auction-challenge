@@ -30,7 +30,7 @@ export default function PersonalInfoForm({
       <h3 className="text-lg font-semibold mb-4">Informazioni Personali</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="name">Nome</Label>
           {isEditing ? (
             <Input
@@ -45,7 +45,7 @@ export default function PersonalInfoForm({
           )}
         </div>
 
-        <div>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="surname">Cognome</Label>
           {isEditing ? (
             <Input
@@ -60,12 +60,12 @@ export default function PersonalInfoForm({
           )}
         </div>
 
-        <div>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="email">Email</Label>
           <p className="text-gray-700 py-2">{userData?.email || "N/A"}</p>
         </div>
 
-        <div>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="phone">Telefono</Label>
           {isEditing ? (
             <Input
@@ -80,7 +80,7 @@ export default function PersonalInfoForm({
           )}
         </div>
 
-        <div className="md:col-span-2">
+        <div className="md:col-span-2 flex flex-col gap-2">
           <Label htmlFor="description">Biografia</Label>
           {isEditing ? (
             <Textarea

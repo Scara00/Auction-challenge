@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { AlertTriangle, Loader2 } from "lucide-react";
+import { AlertTriangle, Loader2, Trash2 } from "lucide-react";
 
 interface BidFormProps {
   currentBid: number;
@@ -111,17 +111,17 @@ export default function BidForm({
               <Dialog>
                 <DialogTrigger asChild>
                   <Button variant="destructive" className="w-full">
-                    <AlertTriangle className="h-4 w-4 mr-2" />
-                    Ritira asta
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Elimina asta
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Conferma ritiro asta</DialogTitle>
+                    <DialogTitle>Conferma eliminazione asta</DialogTitle>
                     <DialogDescription>
-                      Sei sicuro di voler ritirare questa asta? L'asta non sarà
+                      Sei sicuro di voler eliminare questa asta? L'asta non sarà
                       più visibile agli altri utenti e tutte le offerte saranno
-                      annullate.
+                      annullate. Questa azione non può essere annullata.
                     </DialogDescription>
                   </DialogHeader>
                   <DialogFooter>
@@ -132,8 +132,10 @@ export default function BidForm({
                       disabled={isSubmitting}>
                       {isSubmitting ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : null}
-                      Conferma ritiro
+                      ) : (
+                        <Trash2 className="h-4 w-4 mr-2" />
+                      )}
+                      Conferma eliminazione
                     </Button>
                   </DialogFooter>
                 </DialogContent>
