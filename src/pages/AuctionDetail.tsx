@@ -10,11 +10,13 @@ import ImageGallery from "@/components/auction/ImageGallery";
 import AuctionInfo from "@/components/auction/AuctionInfo";
 import AuctionTimer from "@/components/auction/AuctionTimer";
 import AuctionOwner from "@/components/auction/AuctionOwner";
+import AuctionWinner from "@/components/auction/AuctionWinner";
 import BidForm from "@/components/auction/BidForm";
 import BidHistory from "@/components/auction/BidHistory";
 import AuctionCard from "@/components/view/AuctionCard";
 import {
   getAuctionById,
+  getAuctions,
   setAuctionFavourite,
   createAuctionBid,
   getAuctionsCategory,
@@ -63,10 +65,36 @@ export default function AuctionDetailPage() {
       const expired =
         new Date(data.endDate) < new Date() || data.status === "INACTIVE";
       setIsExpired(expired);
+
+      // Carica le aste suggerite della stessa categoria
+      loadSuggestedAuctions(data.categoryId, id);
     } catch (error) {
       console.error("Errore nel caricamento dell'asta:", error);
     } finally {
       if (showLoading) setIsLoading(false);
+    }
+  };
+
+  // Carica le aste suggerite della stessa categoria
+  const loadSuggestedAuctions = async (
+    categoryId: string,
+    currentAuctionId: string,
+  ) => {
+    try {
+      const result = await getAuctions({
+        categoryId,
+        page: 1,
+        limit: 6,
+      });
+
+      // Filtra per escludere l'asta corrente
+      const filtered = (result.list || []).filter(
+        (auction: AuctionResponse) => auction.id !== currentAuctionId,
+      );
+
+      setSuggestedAuctions(filtered.slice(0, 5));
+    } catch (error) {
+      console.error("Errore nel caricamento delle aste suggerite:", error);
     }
   };
 
@@ -195,6 +223,11 @@ export default function AuctionDetailPage() {
 
           {/* Venditore */}
           <AuctionOwner ownerId={auction.ownerId} />
+
+          {/* Vincitore (se asta scaduta e c'è un vincitore) */}
+          {isExpired && auction.winningBid && (
+            <AuctionWinner winningBid={auction.winningBid} />
+          )}
         </div>
       </div>
 
