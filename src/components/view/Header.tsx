@@ -11,19 +11,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, User, LogOut, Settings, Heart } from "lucide-react";
+import { Search, User, LogOut, Settings, Heart, X } from "lucide-react";
 import { logOutAPICall } from "@/api/services/AuthServiceApi";
 
 export default function Header() {
   const { isAuthenticated, user, refreshToken } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState("");
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setMobileSearchOpen(false);
+      setSearchQuery("");
     }
+  };
+
+  const handleMobileSearchClick = () => {
+    setMobileSearchOpen(true);
   };
 
   const handleLogout = async () => {
@@ -57,16 +64,18 @@ export default function Header() {
         <nav className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
-            <Link to="/home" className="flex items-center">
+            <Link to="/home" className="flex items-center shrink-0">
               <img
                 src="/LOGO_ICB_BIANCO_ORIZZONTALE.png"
                 alt="ICB Auctions"
-                className="h-10 w-auto"
+                className="h-8 md:h-10 w-auto"
               />
             </Link>
 
-            {/* Barra di ricerca */}
-            <form onSubmit={handleSearch} className="flex-1 max-w-md">
+            {/* Barra di ricerca - Desktop */}
+            <form
+              onSubmit={handleSearch}
+              className="hidden md:block flex-1 max-w-md">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
@@ -80,7 +89,16 @@ export default function Header() {
             </form>
 
             {/* Menu Profilo */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4">
+              {/* Icona ricerca - Mobile */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden text-white hover:text-gray-300"
+                onClick={handleMobileSearchClick}>
+                <Search className="h-5 w-5" />
+              </Button>
+
               {isAuthenticated && (
                 <>
                   <Link to="/search?favorites=true">
@@ -91,7 +109,7 @@ export default function Header() {
                       <Heart className="h-5 w-5" />
                     </Button>
                   </Link>
-                  <Link to="/auctions/create">
+                  <Link to="/auctions/create" className="hidden sm:block">
                     <Button variant="secondary">Crea Asta</Button>
                   </Link>
                 </>
@@ -169,6 +187,29 @@ export default function Header() {
               </DropdownMenu>
             </div>
           </div>
+
+          {/* Barra di ricerca mobile - espandibile */}
+          {mobileSearchOpen && (
+            <div className="md:hidden mt-4">
+              <form onSubmit={handleSearch} className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Cerca aste..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 pr-10 w-full bg-white"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={() => setMobileSearchOpen(false)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                  <X className="h-4 w-4" />
+                </button>
+              </form>
+            </div>
+          )}
         </nav>
       </header>
 

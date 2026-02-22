@@ -84,21 +84,29 @@ export default function HomePage() {
 
             <div className="flex gap-3">
               <Link to="/search">
-                <Button className="gap-2">
+                <Button
+                  variant="outline"
+                  className="gap-2 bg-white text-slate-900 hover:bg-gray-100 border-white">
                   <Search className="w-4 h-4" />
                   Esplora
                 </Button>
               </Link>
               {isAuthenticated ? (
                 <Link to="/auctions/create">
-                  <Button className="gap-2">
+                  <Button
+                    variant="outline"
+                    className="gap-2 bg-white text-slate-900 hover:bg-gray-100 border-white">
                     <Plus className="w-4 h-4" />
                     Crea asta
                   </Button>
                 </Link>
               ) : (
                 <Link to="/register">
-                  <Button>Registrati</Button>
+                  <Button
+                    variant="outline"
+                    className="bg-white text-slate-900 hover:bg-gray-100 border-white">
+                    Registrati
+                  </Button>
                 </Link>
               )}
             </div>
