@@ -77,40 +77,5 @@ apiClient.interceptors.response.use(
     }
 );
 
-// API Axios Get Call.
-export const getAPICall = async (
-    url: string,
-    config?: AxiosRequestConfig
-): Promise<AxiosResponse> => {
-    return api.get(url, config);
-};
 
-// API Axios Post Call.
-export const postAPICall = async (
-    url: string,
-    data: any,
-    config?: AxiosRequestConfig
-): Promise<AxiosResponse> => {
-    /** */
-
-    // all other calls
-    return api.post(url, data, config);
-};
-
-// API Axios Put Call.
-export const putAPICall = async (
-    url: string,
-    data: any,
-    config?: AxiosRequestConfig
-): Promise<AxiosResponse> => {
-    return api.put(url, data, config);
-};
-
-// API Axios Delete Call.
-export const deleteAPICall = async (
-    url: string,
-    config?: AxiosRequestConfig
-): Promise<AxiosResponse> => {
-    return api.delete(url, config);
-};
 export default apiClient;

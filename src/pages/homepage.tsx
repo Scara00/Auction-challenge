@@ -1,42 +1,53 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
+import { Button } from "@/components/ui/button";
+import { Search, Plus } from "lucide-react";
 import LatestAuctionsSection from "@/components/view/LatestAuctionsSection";
-import CategoriesSection from "@/components/view/CategoriesSection";
 import FavoritesSection from "@/components/view/FavoritesSection";
-import { type Category } from "@/data/mockData";
+import CategoriesSidebar from "@/components/view/CategoriesSidebar";
+
 import {
   getAuctions,
   getAuctionsCategory,
 } from "@/api/services/AuctionServiceApi";
-import type { AuctionResponse } from "@/types/auction";
+import type { AuctionResponse, Category } from "@/types/auction";
 
 export default function HomePage() {
   const { isAuthenticated, user } = useAuthStore();
   const [latestAuctions, setLatestAuctions] = useState<AuctionResponse[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [favorites, setFavorites] = useState<AuctionResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [isAuthenticated]);
 
   const getData = async () => {
-    const listAuction = await getListAuctions(false);
-    setLatestAuctions(listAuction);
-    const favoritesAuction = await getListAuctions(true);
-    setFavorites(favoritesAuction);
-    fetchCategories();
+    setIsLoading(true);
+    try {
+      const listAuction = await getListAuctions(false);
+      setLatestAuctions(listAuction || []);
+
+      // Carica i preferiti solo se autenticato
+      if (isAuthenticated) {
+        const favoritesAuction = await getListAuctions(true);
+        setFavorites(favoritesAuction || []);
+      }
+
+      await fetchCategories();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const fetchCategories = async () => {
     try {
       const data = await getAuctionsCategory();
-      setCategories(data.list);
+      setCategories(data.list || []);
     } catch (error) {
       console.error("Errore nel caricamento delle categorie:", error);
-    } finally {
-      console.log("Caricamento categorie completato");
     }
   };
 
@@ -51,34 +62,71 @@ export default function HomePage() {
       return result.list;
     } catch (error) {
       console.log(error);
+      return [];
     }
   };
 
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-slate-800 to-slate-600 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Benvenuto su ICB Auctions
-          </h1>
-          <p className="text-xl text-gray-200 max-w-2xl mx-auto">
-            Scopri le migliori aste online. Compra e vendi in modo semplice e
-            sicuro.
-          </p>
+    <div className="min-h-screen">
+      {/* Hero Section - Compatto */}
+      <section className="bg-slate-900 text-white py-10">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">
+                Benvenuto su ICB Auctions
+              </h1>
+              <p className="text-gray-400">
+                Scopri le migliori aste online. Compra e vendi in modo semplice
+                e sicuro.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <Link to="/search">
+                <Button className="gap-2">
+                  <Search className="w-4 h-4" />
+                  Esplora
+                </Button>
+              </Link>
+              {isAuthenticated ? (
+                <Link to="/auctions/create">
+                  <Button className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    Crea asta
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/register">
+                  <Button>Registrati</Button>
+                </Link>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Sezione 1: Ultime Aste */}
-      <LatestAuctionsSection auctions={latestAuctions} isLoading={isLoading} />
+      {/* Layout principale con sidebar categorie */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Contenuto principale */}
+          <div className="flex-1 min-w-0">
+            {/* Ultime Aste */}
+            <LatestAuctionsSection
+              auctions={latestAuctions}
+              isLoading={isLoading}
+            />
 
-      {/* Sezione 2: Categorie */}
-      <CategoriesSection categories={categories} isLoading={isLoading} />
+            {/* Preferiti (solo se autenticato) */}
+            {isAuthenticated && (
+              <FavoritesSection favorites={favorites} isLoading={isLoading} />
+            )}
+          </div>
 
-      {/* Sezione 3: Preferiti (solo se autenticato) */}
-      {isAuthenticated && (
-        <FavoritesSection favorites={favorites} isLoading={isLoading} />
-      )}
+          {/* Sidebar Categorie */}
+          <CategoriesSidebar categories={categories} isLoading={isLoading} />
+        </div>
+      </div>
     </div>
   );
 }

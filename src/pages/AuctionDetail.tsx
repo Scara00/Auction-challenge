@@ -22,11 +22,7 @@ import {
   getAuctionsCategory,
   deleteAuction,
 } from "@/api/services/AuctionServiceApi";
-
-interface Category {
-  id: string;
-  name: string;
-}
+import type { Category } from "@/types/auction";
 
 export default function AuctionDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -207,7 +203,10 @@ export default function AuctionDetailPage() {
             isFavorite={isFavorite}
             onToggleFavorite={handleToggleFavorite}
           />
-
+          {/* Vincitore (se asta scaduta e c'è un vincitore) */}
+          {isExpired && auction.winningBid && (
+            <AuctionWinner winningBid={auction.winningBid} />
+          )}
           {/* Timer */}
           <AuctionTimer endDate={auction.endDate} onExpire={handleExpire} />
 
@@ -223,11 +222,6 @@ export default function AuctionDetailPage() {
 
           {/* Venditore */}
           <AuctionOwner ownerId={auction.ownerId} />
-
-          {/* Vincitore (se asta scaduta e c'è un vincitore) */}
-          {isExpired && auction.winningBid && (
-            <AuctionWinner winningBid={auction.winningBid} />
-          )}
         </div>
       </div>
 
@@ -244,7 +238,7 @@ export default function AuctionDetailPage() {
       {suggestedAuctions.length > 0 && (
         <section className="mt-12">
           <h2 className="text-2xl font-bold mb-6">Aste simili</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {suggestedAuctions.map((suggestedAuction) => (
               <AuctionCard
                 key={suggestedAuction.id}

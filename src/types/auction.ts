@@ -40,6 +40,17 @@ export interface AuctionCount {
   auctionFavorites: number;
 }
 
+export interface CategoryCount {
+  auctions: number;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  description: string;
+  _count: CategoryCount;
+}
+
 export interface AuctionResponse {
   id: string;
   title: string;

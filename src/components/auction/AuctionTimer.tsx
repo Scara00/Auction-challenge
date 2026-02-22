@@ -51,13 +51,7 @@ export default function AuctionTimer({ endDate, onExpire }: AuctionTimerProps) {
   }, [endDate, onExpire]);
 
   if (isExpired) {
-    return (
-      <Card className="bg-red-50 border-red-200">
-        <CardContent className="p-4 text-center">
-          <p className="text-red-600 font-semibold">Asta Terminata</p>
-        </CardContent>
-      </Card>
-    );
+    return <></>;
   }
 
   return (
