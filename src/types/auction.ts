@@ -21,7 +21,7 @@ export interface BidInAuctionResponse {
   user?: {
     id: string;
     name: string;
-    profileImage?: string;
+    profilePictureId?: string;
   };
 }
 

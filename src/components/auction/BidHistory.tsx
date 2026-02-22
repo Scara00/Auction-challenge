@@ -89,7 +89,12 @@ export default function BidHistory({
                 }`}>
                 <div className="flex items-center gap-3">
                   <Avatar>
-                    <AvatarImage src={bid.user?.profileImage} />
+                    {bid.user?.profilePictureId && (
+                      <AvatarImage
+                        src={`https://api-challenge.icib.dev/media/${bid.user.profilePictureId}`}
+                        alt={bid.user?.name}
+                      />
+                    )}
                     <AvatarFallback>
                       {bid.user?.name ? getInitials(bid.user.name) : "U"}
                     </AvatarFallback>
