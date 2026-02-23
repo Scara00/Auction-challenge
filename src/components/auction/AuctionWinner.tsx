@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Trophy, Loader2, Award, PartyPopper } from "lucide-react";
-import { getInitials } from "@/lib/utils";
+import { getInitials, formatCurrency } from "@/lib/utils";
 import { getUserById } from "@/api/services/UserServiceApi";
 import type { WinningBidResponse } from "@/types/auction";
 
@@ -39,13 +39,6 @@ export default function AuctionWinner({ winningBid }: AuctionWinnerProps) {
       loadWinnerData();
     }
   }, [winningBid]);
-
-  const formatCurrency = (amount: number) => {
-    return amount.toLocaleString("it-IT", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
 
   if (isLoading) {
     return (

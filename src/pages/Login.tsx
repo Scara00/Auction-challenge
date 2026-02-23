@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import { LoginForm } from "@/components/view/loginForm";
 import { loginAPICall } from "@/api/services/AuthServiceApi";
-import { Gavel } from "lucide-react";
 import { GetLoggedUser } from "@/api/services/UserServiceApi";
+import AuthSidebar from "@/components/view/AuthSidebar";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -42,20 +42,7 @@ export default function Login() {
           </div>
         </div>
       </div>
-      <div className=" bg-black flex flex-col gap-4 items-center justify-center">
-        <Gavel className="h-12 w-12 " color="white" />
-        <img
-          src="/LOGO_ICB_BIANCO_ORIZZONTALE.png"
-          alt="ICB Auctions"
-          className="h-30 w-auto mb-6"
-        />
-
-        {/* <img
-          src="/placeholder.svg"
-          alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        /> */}
-      </div>
+      <AuthSidebar />
     </div>
   );
 }

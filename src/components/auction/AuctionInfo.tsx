@@ -3,6 +3,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Calendar } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 
 interface AuctionInfoProps {
   title: string;
@@ -25,16 +26,6 @@ export default function AuctionInfo({
 }: AuctionInfoProps) {
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("it-IT", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   const handleFavoriteClick = () => {
     if (!isAuthenticated) {
@@ -65,7 +56,7 @@ export default function AuctionInfo({
       <div className="flex flex-wrap gap-4 text-sm text-gray-500">
         <div className="flex items-center gap-1">
           <Calendar className="h-4 w-4" />
-          <span>Creata il {formatDate(createdAt)}</span>
+          <span>Creata il {formatDate(createdAt, true)}</span>
         </div>
         <div className="flex items-center gap-1">
           <Heart className="h-4 w-4" />

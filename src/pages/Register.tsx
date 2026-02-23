@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RegisterForm } from "@/components/view/registerForm";
-
-import { Gavel } from "lucide-react";
 import { registerUserAPICall } from "@/api/services/UserServiceApi";
 import { uploadMediaPublic } from "@/api/services/MediaServiceApi";
+import AuthSidebar from "@/components/view/AuthSidebar";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -61,8 +60,8 @@ export default function Register() {
 
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
-      <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex flex-1 items-center justify-center">
+      <div className="flex flex-col gap-4 p-4 md:p-10">
+        <div className="flex flex-1 items-center justify-center py-4 md:py-0">
           <div className="w-full max-w-md">
             {error && (
               <div className="mb-4 text-sm text-red-500 text-center bg-red-50 p-3 rounded">
@@ -76,14 +75,7 @@ export default function Register() {
           </div>
         </div>
       </div>
-      <div className="bg-black flex flex-col gap-4 items-center justify-center">
-        <Gavel className="h-12 w-12" color="white" />
-        <img
-          src="/LOGO_ICB_BIANCO_ORIZZONTALE.png"
-          alt="ICB Auctions"
-          className="h-30 w-auto mb-6"
-        />
-      </div>
+      <AuthSidebar />
     </div>
   );
 }

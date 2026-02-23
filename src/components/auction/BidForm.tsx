@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
+import { formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,13 +39,6 @@ export default function BidForm({
 
   const { isAuthenticated } = useAuthStore();
   const minBid = currentBid > 0 ? currentBid + 1 : startingPrice;
-
-  const formatCurrency = (amount: number) => {
-    return amount.toLocaleString("it-IT", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
 
   const handleSubmit = async () => {
     const amount = parseFloat(bidAmount);

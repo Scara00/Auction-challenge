@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera, Mail, Phone, Calendar, Loader2 } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 import type { UserResponse } from "@/types/user";
 
 interface ProfileCardProps {
@@ -27,14 +28,6 @@ export default function ProfileCard({
     if (userData?.profilePictureId)
       return `https://api-challenge.icib.dev/media/${userData.profilePictureId}`;
     return null;
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("it-IT", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
   };
 
   return (

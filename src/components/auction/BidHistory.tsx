@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Trophy } from "lucide-react";
-import { getInitials } from "@/lib/utils";
+import { getInitials, formatCurrency, formatDate } from "@/lib/utils";
 import type { BidInAuctionResponse, WinningBidResponse } from "@/types/auction";
 
 interface BidHistoryProps {
@@ -16,24 +16,6 @@ export default function BidHistory({
   winningBid,
   isExpired,
 }: BidHistoryProps) {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("it-IT", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const formatCurrency = (amount: number) => {
-    if (amount === undefined || amount === null) return "0,00";
-    return amount.toLocaleString("it-IT", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
-
   // Ordina le offerte per importo decrescente (filtra quelle senza amount)
   const sortedBids = [...bids]
     .filter((bid) => bid.amount !== undefined)
@@ -101,7 +83,7 @@ export default function BidHistory({
                       )}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {formatDate(bid.createdAt)}
+                      {formatDate(bid.createdAt, true)}
                     </p>
                   </div>
                 </div>

@@ -29,7 +29,6 @@ export const RegisterForm: React.FC<
 > = ({ className, onClickRegister, isLoading, ...props }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [phone, setPhone] = useState("");
@@ -54,11 +53,6 @@ export const RegisterForm: React.FC<
     e.preventDefault();
     setError("");
 
-    if (password !== confirmPassword) {
-      setError("Le password non corrispondono");
-      return;
-    }
-
     if (password.length < 6) {
       setError("La password deve essere di almeno 6 caratteri");
       return;
@@ -76,13 +70,15 @@ export const RegisterForm: React.FC<
 
   return (
     <form
-      className={cn("flex flex-col gap-4", className)}
+      className={cn("flex flex-col gap-2 md:gap-4", className)}
       onSubmit={handleSubmit}
       {...props}>
-      <FieldGroup>
+      <FieldGroup className="gap-3 md:gap-6">
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">Crea un nuovo account</h1>
-          <p className="text-muted-foreground text-sm text-balance">
+          <h1 className="text-xl md:text-2xl font-bold">
+            Crea un nuovo account
+          </h1>
+          <p className="text-muted-foreground text-xs md:text-sm text-balance">
             Inserisci i tuoi dati per registrarti
           </p>
         </div>
@@ -97,11 +93,11 @@ export const RegisterForm: React.FC<
         <div className="flex justify-center">
           <div className="relative">
             <Avatar
-              className="h-24 w-24 cursor-pointer"
+              className="h-16 w-16 md:h-24 md:w-24 cursor-pointer"
               onClick={() => fileInputRef.current?.click()}>
               <AvatarImage src={imagePreview || undefined} alt="Profile" />
               <AvatarFallback className="bg-gray-100">
-                <User className="h-10 w-10 text-gray-400" />
+                <User className="h-6 w-6 md:h-10 md:w-10 text-gray-400" />
               </AvatarFallback>
             </Avatar>
             <button
@@ -119,11 +115,11 @@ export const RegisterForm: React.FC<
             />
           </div>
         </div>
-        <p className="text-center text-sm text-muted-foreground">
+        <p className="text-center text-xs md:text-sm text-muted-foreground">
           Clicca per aggiungere una foto profilo
         </p>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 md:gap-4">
           <Field>
             <FieldLabel htmlFor="name">Nome</FieldLabel>
             <Input
@@ -179,17 +175,6 @@ export const RegisterForm: React.FC<
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </Field>
-
-        <Field>
-          <FieldLabel htmlFor="confirmPassword">Conferma Password</FieldLabel>
-          <Input
-            id="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
         </Field>

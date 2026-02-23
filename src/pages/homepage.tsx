@@ -106,13 +106,22 @@ export default function HomePage() {
                   </Button>
                 </Link>
               ) : (
-                <Link to="/register">
-                  <Button
-                    variant="outline"
-                    className="bg-white text-slate-900 hover:bg-gray-100 border-white">
-                    Registrati
-                  </Button>
-                </Link>
+                <>
+                  <Link to="/login">
+                    <Button
+                      variant="outline"
+                      className="bg-white text-slate-900 hover:bg-gray-100 border-white">
+                      Accedi
+                    </Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button
+                      variant="outline"
+                      className="bg-white text-slate-900 hover:bg-gray-100 border-white">
+                      Registrati
+                    </Button>
+                  </Link>
+                </>
               )}
             </div>
           </div>

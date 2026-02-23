@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Loader2, User, Calendar, Mail, Phone } from "lucide-react";
-import { getInitials } from "@/lib/utils";
+import { getInitials, formatDate } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getUserById } from "@/api/services/UserServiceApi";
@@ -47,15 +47,6 @@ export default function UserProfilePage() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "";
-    return new Date(dateString).toLocaleDateString("it-IT", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
   };
 
   if (isLoading) {
