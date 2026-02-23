@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Trophy, Loader2, Award, PartyPopper } from "lucide-react";
+import { getInitials } from "@/lib/utils";
 import { getUserById } from "@/api/services/UserServiceApi";
 import type { WinningBidResponse } from "@/types/auction";
 
@@ -44,13 +45,6 @@ export default function AuctionWinner({ winningBid }: AuctionWinnerProps) {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
-  };
-
-  const getInitials = (name?: string, surname?: string) => {
-    const initials = [];
-    if (name) initials.push(name[0]);
-    if (surname) initials.push(surname[0]);
-    return initials.join("").toUpperCase() || "V";
   };
 
   if (isLoading) {
@@ -101,7 +95,7 @@ export default function AuctionWinner({ winningBid }: AuctionWinnerProps) {
                   alt={winner?.name}
                 />
                 <AvatarFallback className="bg-gradient-to-br from-yellow-100 to-amber-100 text-yellow-700 text-2xl font-bold">
-                  {getInitials(winner?.name, winner?.surname)}
+                  {getInitials("V", winner?.name, winner?.surname)}
                 </AvatarFallback>
               </Avatar>
               {/* Trofeo badge */}

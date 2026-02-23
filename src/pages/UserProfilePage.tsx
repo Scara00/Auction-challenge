@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Loader2, User, Calendar, Mail, Phone } from "lucide-react";
+import { getInitials } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getUserById } from "@/api/services/UserServiceApi";
@@ -46,13 +47,6 @@ export default function UserProfilePage() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const getInitials = (name?: string, surname?: string) => {
-    const initials = [];
-    if (name) initials.push(name[0]);
-    if (surname) initials.push(surname[0]);
-    return initials.join("").toUpperCase() || "U";
   };
 
   const formatDate = (dateString?: string) => {
@@ -117,7 +111,7 @@ export default function UserProfilePage() {
                 alt={user.name}
               />
               <AvatarFallback className="bg-gray-100 text-2xl">
-                {getInitials(user.name, user.surname)}
+                {getInitials("U", user.name, user.surname)}
               </AvatarFallback>
             </Avatar>
 

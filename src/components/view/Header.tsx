@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
+import { getInitials } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -46,16 +47,6 @@ export default function Header() {
 
       navigate("/login");
     }
-  };
-
-  const getInitials = (name?: string) => {
-    if (!name) return "U";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
   };
 
   return (
@@ -129,7 +120,7 @@ export default function Header() {
                       ) : null}
                       <AvatarFallback className="bg-white">
                         {isAuthenticated ? (
-                          getInitials(user?.name)
+                          getInitials("U", user?.name)
                         ) : (
                           <User className="h-5 w-5" />
                         )}

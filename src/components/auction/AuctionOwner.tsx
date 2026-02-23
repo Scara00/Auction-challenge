@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { User, Loader2 } from "lucide-react";
+import { getInitials } from "@/lib/utils";
 import { getUserById } from "@/api/services/UserServiceApi";
 
 interface OwnerData {
@@ -38,13 +39,6 @@ export default function AuctionOwner({ ownerId }: AuctionOwnerProps) {
     }
   }, [ownerId]);
 
-  const getInitials = (name?: string, surname?: string) => {
-    const initials = [];
-    if (name) initials.push(name[0]);
-    if (surname) initials.push(surname[0]);
-    return initials.join("").toUpperCase() || "U";
-  };
-
   const getFullName = () => {
     if (!owner) return "Utente";
     return [owner.name, owner.surname].filter(Boolean).join(" ");
@@ -78,7 +72,7 @@ export default function AuctionOwner({ ownerId }: AuctionOwnerProps) {
               />
               <AvatarFallback className="bg-gray-100">
                 {owner ? (
-                  getInitials(owner.name, owner.surname)
+                  getInitials("U", owner.name, owner.surname)
                 ) : (
                   <User className="h-5 w-5 text-gray-400" />
                 )}

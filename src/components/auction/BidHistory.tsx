@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Trophy } from "lucide-react";
+import { getInitials } from "@/lib/utils";
 import type { BidInAuctionResponse, WinningBidResponse } from "@/types/auction";
 
 interface BidHistoryProps {
@@ -33,20 +34,10 @@ export default function BidHistory({
     });
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   // Ordina le offerte per importo decrescente (filtra quelle senza amount)
   const sortedBids = [...bids]
     .filter((bid) => bid.amount !== undefined)
     .sort((a, b) => b.amount - a.amount);
-  const topBid = sortedBids[0];
 
   return (
     <Card>
@@ -96,7 +87,7 @@ export default function BidHistory({
                       />
                     )}
                     <AvatarFallback>
-                      {bid.user?.name ? getInitials(bid.user.name) : "U"}
+                      {getInitials("U", bid.user?.name)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
